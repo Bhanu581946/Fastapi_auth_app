@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Create Board</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: whitesmoke;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .box {
+      width: 300px;
+      margin: auto;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      background: white;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      margin-top: 10px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      box-sizing: border-box;
+    }
+
+    .btn {
+      width: 100%;
+      margin-top: 15px;
+      padding: 10px;
+      background-color: #666;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .btn:hover {
+      background-color: #444;
+    }
+
+    .logoutbtn {
+      margin-top: 20px;
+      color: darkblue;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h2>Create Board</h2>
+
+  <!-- Create Board Box -->
+  <div class="box">
+    <input type="text" id="boardname" placeholder="Enter board name">
+    <button id="createboardbtn" class="btn">Create Board</button>
+  </div>
+
+  <p class="logoutbtn" id="logoutbtn">Logout</p>
+
+  <p><a href="board_list.html">View Your Boards</a></p>
+
+  <script>
+    const API = "http://127.0.0.1:8000";
+    const token = localStorage.getItem("token");
+
+    // Redirect if no login token
+    if (!token) {
+      alert("Please login first");
+      window.location.href = "login.html";
+    }
+
+    // Authorization headers
+    function authHeaders() {
+      return {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + token
+      };
+    }
+
+    // CREATE BOARD button
+    document.getElementById("createboardbtn").addEventListener("click", async () => {
+      const name = document.getElementById("boardname").value.trim();
+
+      if (!name) {
+        return alert("Please enter board name");
+      }
+
+      const res = await fetch(`${API}/boards/`, {
+        method: "POST",
+        headers: authHeaders(),
+        body: JSON.stringify({ name })
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        alert("Board created successfully!");
+        document.getElementById("boardname").value = "";
+      } else {
+        alert("Error: " + (data.detail || "Failed to create board"));
+      }
+    });
+
+    // LOGOUT
+    document.getElementById("logoutbtn").addEventListener("click", () => {
+      localStorage.removeItem("token");
+      alert("Logged out!");
+      window.location.href = "login.html";
+    });
+  </script>
+
+</body>
+</html>

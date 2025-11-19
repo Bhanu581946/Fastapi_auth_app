@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Your Boards</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: whitesmoke;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .board-box {
+      width: 300px;
+      margin: auto;
+      background: white;
+      padding: 15px;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      margin-bottom: 12px;
+    }
+
+    button {
+      padding: 8px 12px;
+      border: none;
+      border-radius: 6px;
+      background: #4285f4;
+      color: white;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    button:hover {
+      background: darkblue;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h2>Your Boards</h2>
+
+  <!-- Empty div where JavaScript will add board cards dynamically -->
+  <div id="boardList"></div>
+
+  <script>
+    // Backend API base URL
+    const API = "http://127.0.0.1:8000";
+
+    // Read the login token from localStorage
+    const token = localStorage.getItem("token");
+
+    // If user is not logged in, redirect them to login page
+    if (!token) {
+      alert("Please login first!");
+      window.location.href = "login.html";
+    }
+
+    // Function to return headers with JWT token
+    function authHeaders() {
+      return {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + token
+      };
+    }
+
+    // Load boards from backend API
+    async function loadBoards() {
+      const res = await fetch(`${API}/boards/all`, {
+        headers: authHeaders()
+      });
+
+      // If API fails, show an error
+      if (!res.ok) {
+        alert("Failed to load boards!");
+        return;
+      }
+
+      // Convert API response to JSON
+      const boards = await res.json();
+
+      // Access the empty div using its ID (boardList)
+      const list = document.getElementById("boardList");
+
+      // Clear any previous content
+      list.innerHTML = "";
+
+      // Loop through each board and add HTML into the div
+      boards.forEach(board => {
+        list.innerHTML += `
+          <div class="board-box">
+            <h3>${board.name}</h3>
+            <p><b>Your Role:</b> ${board.role}</p>
+            <button onclick="changeRole(${board.id})">Change Role</button>
+          </div>
+        `;
+      });
+    }
+
+    // Navigate to change_role page with board_id
+    function changeRole(board_id) {
+      window.location.href = `change_role.html?board_id=${board_id}`;
+    }
+
+    // Call the function to load boards when page opens
+    loadBoards();
+  </script>
+
+</body>
+</html>

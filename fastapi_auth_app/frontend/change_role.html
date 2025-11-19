@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Change Member Role</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: whitesmoke;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .board-box {
+      width: 300px;
+      margin: auto;
+      background: white;
+      padding: 15px;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      margin-bottom: 12px;
+    }
+
+    select, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      background: lightblue;
+      color: white;
+      cursor: pointer;
+      border: none;
+    }
+
+    button:hover {
+      background: darkblue;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h2>Change Member Role</h2>
+
+  <div class="board-box">
+    <p><b>Board:</b> <span id="boardName">Loading...</span></p>
+
+    <label>Select Member:</label>
+    <select id="memberList"></select>
+
+    <label>Select New Role:</label>
+    <select id="newRole">
+      <option value="Viewer">Viewer</option>
+      <option value="Member">Member</option>
+      <option value="Owner">Owner</option>
+    </select>
+
+    <button id="updateBtn">Update Role</button>
+  </div>
+
+  <p><a href="board_list.html">Back to Boards</a></p>
+
+  <script>
+    const API = "http://127.0.0.1:8000";
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      alert("Please login first!");
+      window.location.href = "login.html";
+    }
+
+    function authHeaders() {
+      return {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + token
+      };
+    }
+
+    // Read board_id from URL
+    const params = new URLSearchParams(window.location.search);
+    const board_id = params.get("board_id");
+
+    if (!board_id) {
+      alert("Invalid Board!");
+      window.location.href = "board_list.html";
+    }
+
+    // Load board info + members
+    async function loadData() {
+
+      // 1. Load board name
+      const boardRes = await fetch(`${API}/boards/one/${board_id}`, {
+        headers: authHeaders()
+      });
+
+      const board = await boardRes.json();
+      document.getElementById("boardName").innerText = board.name;
+
+      // 2. Load members list
+      const membersRes = await fetch(`${API}/boards/members/${board_id}`, {
+        headers: authHeaders()
+      });
+
+      const members = await membersRes.json();
+      const list = document.getElementById("memberList");
+      list.innerHTML = "";
+
+      members.forEach(m => {
+        list.innerHTML += `
+          <option value="${m.user_id}">
+            ${m.username} (${m.role})
+          </option>
+        `;
+      });
+    }
+
+    loadData();
+
+    // Send role update request
+    document.getElementById("updateBtn").addEventListener("click", async () => {
+
+      const user_id = document.getElementById("memberList").value;
+      const new_role = document.getElementById("newRole").value;
+
+      const res = await fetch(`${API}/boards/role`, {
+        method: "PUT",
+        headers: authHeaders(),
+        body: JSON.stringify({
+          board_id: parseInt(board_id),
+          user_id: parseInt(user_id),
+          new_role: new_role
+        })
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        alert("Role updated successfully!");
+        window.location.href = "board_list.html";
+      } else {
+        alert("Error: " + (data.detail || "Something went wrong"));
+      }
+    });
+
+  </script>
+
+</body>
+</html>
