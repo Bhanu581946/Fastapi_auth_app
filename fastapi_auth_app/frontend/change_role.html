@@ -103,10 +103,10 @@
       window.location.href = "board_list.html";
     }
 
-    // // Load board info 
+    // // Load board info + check role
     async function loadData() {
 
-      // 1. Load board id
+      // 1. Load board
       const boardRes = await fetch(`${API}/boards/one/${board_id}`, {
         headers: authHeaders()
       });
@@ -114,6 +114,32 @@
       const board = await boardRes.json();
 
       document.getElementById("boardName").innerHTML = board.name || board_id;
+    }
+
+     //2. Load members to check current user's role
+      const memberRes = await fetch(`${API}/boards/members/${board_id}`, {
+        headers: authHeaders()
+      });
+
+      const members = await memberRes.json();
+
+      // Decode user from token
+      const currentUserId = JSON.parse(atob(token.split(".")[1])).sub;
+
+      const me = members.find(m => m.user_id == currentUserId);
+
+      if (!me) {
+        alert("You are not a member of this board!");
+        window.location.href = "board_list.html";
+        return;
+      }
+
+      // Restrict only owner
+      if (me.role.toLowerCase() !== "owner") {
+        alert("Only owner can change roles!");
+        window.location.href = "board_list.html";
+        return;
+      }
     }
 
     loadData();
