@@ -22,26 +22,10 @@ class ShowBoard(BaseModel):
     class Config:
         from_attributes = True
 
-class TaskCreate(BaseModel):
-    title: str
-    description: Optional[str] = None
-    board_id: int
-    assignee_id: Optional[int] = None
-
-
 class ShowBoardWithRole(BaseModel):
     id: int
     name: str
     role: str  # 👈 new field to include user's role on that board
-    class Config:
-        from_attributes = True
-
-
-class ShowTask(BaseModel):
-    id: int
-    title: str
-    description: Optional[str]
-    status: str
     class Config:
         from_attributes = True
 
@@ -55,3 +39,17 @@ class LoginRequest(BaseModel):
     email: EmailStr
     password: str
     login_type:str
+
+class TaskCreate(BaseModel):
+    title: str
+    description: Optional[str] = None
+    board_id: int
+    assignee_id: Optional[int] = None
+
+class ShowTask(BaseModel):
+    id: int
+    title: str
+    description: Optional[str]
+    status: str
+    class Config:
+        from_attributes = True

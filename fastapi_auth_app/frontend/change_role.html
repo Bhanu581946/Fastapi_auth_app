@@ -81,7 +81,7 @@
   <script>
     const API = "http://127.0.0.1:8000";
     const token = localStorage.getItem("token");
-
+     // 1. Check token
     if (!token) {
       alert("Please login first!");
       window.location.href = "login.html";
@@ -94,7 +94,7 @@
       };
     }
 
-    // Read board_id from URL
+    //2. Read board_id from URL
     const params = new URLSearchParams(window.location.search);
     const board_id = params.get("board_id");
 
@@ -103,10 +103,10 @@
       window.location.href = "board_list.html";
     }
 
-    // // Load board info + check role
+    // // 3 + 4 + 5 → Load board + members + verify owner
     async function loadData() {
 
-      // 1. Load board
+      // Load board info.
       const boardRes = await fetch(`${API}/boards/one/${board_id}`, {
         headers: authHeaders()
       });
@@ -114,18 +114,18 @@
       const board = await boardRes.json();
 
       document.getElementById("boardName").innerHTML = board.name || board_id;
-    }
 
-     //2. Load members to check current user's role
+     //Load board members 
       const memberRes = await fetch(`${API}/boards/members/${board_id}`, {
         headers: authHeaders()
       });
 
       const members = await memberRes.json();
 
-      // Decode user from token
+    // Decode user ID from JWT
       const currentUserId = JSON.parse(atob(token.split(".")[1])).sub;
-
+    
+     // Find me
       const me = members.find(m => m.user_id == currentUserId);
 
       if (!me) {
@@ -140,12 +140,14 @@
         window.location.href = "board_list.html";
         return;
       }
+      // If owner → allow Update button
+      document.getElementById("updateBtn").disabled = false;
     }
 
     loadData();
 
 
-    // Update Role
+    // 6. Update Role
     document.getElementById("updateBtn").addEventListener("click", async () => {
 
       const user_id = document.getElementById("userId").value;
