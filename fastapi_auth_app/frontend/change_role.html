@@ -22,8 +22,18 @@
       margin-bottom: 12px;
     }
 
-    select, button {
-      width: 100%;
+    select {
+      width: 50%;
+      padding: 10px;
+      margin-top: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+
+
+    input[type="number"] {
+      width: 90%;
       padding: 10px;
       margin-top: 10px;
       border-radius: 6px;
@@ -31,6 +41,11 @@
     }
 
     button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
       background: lightblue;
       color: white;
       cursor: pointer;
@@ -49,9 +64,7 @@
 
   <div class="board-box">
     <p><b>Board:</b> <span id="boardName">Loading...</span></p>
-
-    <label>Select Member:</label>
-    <select id="memberList"></select>
+    <input type="number" id="userId" placeholder="Enter User ID"><br<br>
 
     <label>Select New Role:</label>
     <select id="newRole">
@@ -90,41 +103,26 @@
       window.location.href = "board_list.html";
     }
 
-    // Load board info + members
+    // // Load board info 
     async function loadData() {
 
-      // 1. Load board name
+      // 1. Load board id
       const boardRes = await fetch(`${API}/boards/one/${board_id}`, {
         headers: authHeaders()
       });
 
       const board = await boardRes.json();
-      document.getElementById("boardName").innerText = board.name;
 
-      // 2. Load members list
-      const membersRes = await fetch(`${API}/boards/members/${board_id}`, {
-        headers: authHeaders()
-      });
-
-      const members = await membersRes.json();
-      const list = document.getElementById("memberList");
-      list.innerHTML = "";
-
-      members.forEach(m => {
-        list.innerHTML += `
-          <option value="${m.user_id}">
-            ${m.username} (${m.role})
-          </option>
-        `;
-      });
+      document.getElementById("boardName").innerHTML = board.name || board_id;
     }
 
     loadData();
 
-    // Send role update request
+
+    // Update Role
     document.getElementById("updateBtn").addEventListener("click", async () => {
 
-      const user_id = document.getElementById("memberList").value;
+      const user_id = document.getElementById("userId").value;
       const new_role = document.getElementById("newRole").value;
 
       const res = await fetch(`${API}/boards/role`, {

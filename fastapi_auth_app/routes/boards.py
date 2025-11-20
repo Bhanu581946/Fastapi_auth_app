@@ -33,6 +33,18 @@ def create_board(
 # @router.get("/owned", response_model=list[schemas.ShowBoard])
 # def get_boards(db: Session = Depends(get_db), user: models.User = Depends(auth.get_current_user)):
 #     return db.query(models.Board).filter(models.Board.owner_id == user.id).all()
+@router.get("/one/{board-id}")
+def get_one_board(
+    board_id: int,
+    db: Session = Depends(get_db),
+    user: models.User = Depends(auth.get_current_user)
+):
+    board= db.query(models.Board).filter(models.Board_owner_id== user_id).first()
+    if not board:
+        raise HTTPException(status_code= 200, detail= "Board not found")
+    return({"id": board_id, "name": board.name})
+
+
 
 @router.get("/all", response_model=list[schemas.ShowBoardWithRole])
 def get_boards(db: Session = Depends(get_db), user: models.User = Depends(auth.get_current_user)):
@@ -77,7 +89,7 @@ def change_member_role(
         .filter(
             models.BoardMember.board_id == data.board_id,
             models.BoardMember.user_id == current_user.id,
-            models.BoardMember.role == "Owner"
+            models.BoardMember.role == "owner"
         ).first()
     )
     if not membership:
@@ -88,8 +100,8 @@ def change_member_role(
     target_member = (
         db.query(models.BoardMember)
         .filter(
-            models.BoardMember.board_id == data.borad.id,
-            models.BoardMember.user_id == data.user.id
+            models.BoardMember.board_id == data.board_id,
+            models.BoardMember.user_id == data.user_id
         ).first()
     )
     if not target_member:
