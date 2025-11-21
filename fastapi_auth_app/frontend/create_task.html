@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head> 
+    <meta charset="UTF-8">
+    <title>Task Create</title>
+    <style>
+        body{
+            font-family: Arial, Helvetica, sans-serif;
+            background:lightsmoke;
+            text-align: center;
+            padding:20px;
+        
+        }
+        input[type="text"] {
+             padding: 8px;
+             width: 200px;
+             border-radius: 4px;
+             border: 1px solid #999;
+             font-size: 16px;
+             margin:15px;
+             cursor: pointer;
+    }
+
+        button{
+            width:250px;
+            padding:10px;
+            border: none;
+            border-radius: 6px;
+            background: lightblue;
+            color: white;
+            font-size: 18px;
+
+        }
+        button:hover{
+            background: darkblue;
+
+        }
+
+    </style>
+  
+</head>
+<body>
+    <h2>Create Task</h2>
+    <label>title:</label> 
+    <input type ="text" id ="title" placeholder="Task title"><br>
+    <label>description:</label> 
+    <input type ="text" id ="description" placeholder="Task description"><br>
+    <button id="createTask">Create Task</button>
+<script>
+    const API = "http://127.0.0.1:8000";
+    const token= localStorage.getItem("token")
+    if(!token){
+        alert("Please login first")
+        window.location.href("login.html")
+    }
+    function authHeaders(){
+        return{
+        "Content-Type": "application/JSON",
+        "Authorization": "Bearer" + token
+        }
+    }
+const params = new URLSearchParams(window.location.search)
+const board_id = params.get("board_id")
+
+if(!board_id){
+    alert("board not found")
+    window.location.href ="create_boards.html"
+}
+
+document.getElementById("createTask").addEventListener("click", async ()=>{
+    const title =document.getElementById("title").value
+    const description =document.getElementById("description").value
+    
+    if(!title||!description){
+        alert("Please fill all fields");
+        return;
+    }
+    const res= await fetch(`${API}/tasks/`,{
+        method:"Post",
+        headers:authHeaders(),
+        body: JSON.stringify({
+            title: title,
+            description: description,
+            board_id: parseInt (board_id)
+        })
+    });
+    const data =await res.json
+    console.log(data);
+    
+    if(res.ok){
+        alert("Task created Successfully");
+        window.location.href="board_list.html";
+    }else{
+        alert("Error:" + data.deatil);
+    }
+});  
+
+</script>
+</body>
+
+</html>

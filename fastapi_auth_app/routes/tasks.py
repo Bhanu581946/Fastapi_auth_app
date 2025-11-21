@@ -6,7 +6,11 @@ from ..database import get_db
 router = APIRouter(prefix="/tasks", tags=["Tasks"])
 
 @router.post("/", response_model=schemas.ShowTask)
-def create_task(task: schemas.TaskCreate, db: Session = Depends(get_db), user: models.User = Depends(auth.get_current_user)):
+def create_task(task: schemas.TaskCreate, 
+                db: Session = Depends(get_db), 
+                user: models.User = Depends(auth.get_current_user)):
+    
+    # Check membership (user must be member of board)
     membership = db.query(models.BoardMember).filter(
         models.BoardMember.board_id == task.board_id,
         models.BoardMember.user_id == user.id
@@ -22,7 +26,11 @@ def create_task(task: schemas.TaskCreate, db: Session = Depends(get_db), user: m
     return new_task
 
 @router.get("/{board_id}", response_model=list[schemas.ShowTask])
-def get_tasks(board_id: int, db: Session = Depends(get_db), user: models.User = Depends(auth.get_current_user)):
+def get_tasks(board_id: int, 
+              db: Session = Depends(get_db), 
+              user: models.User = Depends(auth.get_current_user)):
+    
+    # Check membership (user must be member of board)
     membership = db.query(models.BoardMember).filter(
         models.BoardMember.board_id == board_id,
         models.BoardMember.user_id == user.id

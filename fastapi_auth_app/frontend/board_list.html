@@ -94,6 +94,7 @@
             <h3>${board.name}</h3>
             <p><b>Your Role:</b> ${board.role}</p>
             <button onclick="changeRole(${board.id})">Change Role</button>
+            <button onclick ="createTask(${board.id})">Create Task</button>
           </div>
         `;
       });
@@ -104,7 +105,12 @@
       window.location.href = `change_role.html?board_id=${board_id}`;
     }
 
-    // Call the function to load boards when page opens
+    //Navigate to create_task page with board_id
+    function createTask(board_id) {
+      window.location.href = `create_task.html?board_id=${board_id}`;
+    }
+   
+
     loadBoards();
   </script>
 
