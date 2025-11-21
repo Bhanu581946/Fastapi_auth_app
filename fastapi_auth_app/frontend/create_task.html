@@ -41,22 +41,24 @@
 </head>
 <body>
     <h2>Create Task</h2>
+    <label>user_id:</label> 
+    <input type ="number" id ="user_id" placeholder="user_id"><br>
     <label>title:</label> 
     <input type ="text" id ="title" placeholder="Task title"><br>
     <label>description:</label> 
-    <input type ="text" id ="description" placeholder="Task description"><br>
+    <input type ="text" id ="description" placeholder="Task description"><br><br>
     <button id="createTask">Create Task</button>
 <script>
     const API = "http://127.0.0.1:8000";
     const token= localStorage.getItem("token")
     if(!token){
         alert("Please login first")
-        window.location.href("login.html")
+        window.location.href= "login.html"
     }
     function authHeaders(){
         return{
-        "Content-Type": "application/JSON",
-        "Authorization": "Bearer" + token
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + token
         }
     }
 const params = new URLSearchParams(window.location.search)
@@ -68,6 +70,7 @@ if(!board_id){
 }
 
 document.getElementById("createTask").addEventListener("click", async ()=>{
+    const user_id =document.getElementById("user_id").value
     const title =document.getElementById("title").value
     const description =document.getElementById("description").value
     
@@ -81,17 +84,19 @@ document.getElementById("createTask").addEventListener("click", async ()=>{
         body: JSON.stringify({
             title: title,
             description: description,
-            board_id: parseInt (board_id)
+            board_id: parseInt (board_id),
+            assignee_id: user_id ? parseInt(user_id) : null
+
         })
     });
-    const data =await res.json
+    const data =await res.json();
     console.log(data);
     
     if(res.ok){
         alert("Task created Successfully");
         window.location.href="board_list.html";
     }else{
-        alert("Error:" + data.deatil);
+        alert("Error:" + data.detail);
     }
 });  
 
