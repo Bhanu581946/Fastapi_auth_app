@@ -1,0 +1,104 @@
+<html>
+    <head>
+        <meta charset ="UTF-8">
+        <title>List of Task</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                background: whitesmoke;
+                padding: 20px;
+                text-align: center;
+            }
+            .task-box {
+                width: 300px;
+                margin: auto;
+                background: white;
+                padding: 15px;
+                border-radius: 8px;
+                border: 1px solid #ddd;
+                margin-bottom: 12px;
+            }
+        </style>
+    </head>
+    <body>
+        <h2>Your Task</h2>
+
+         <!-- Task list container -->
+        <div id ="taskList"></div>
+        <script>
+
+            // Backend URL
+            const API= "http://127.0.0.1:8000";    
+
+            // Read token from localStorage
+            const token= localStorage.getItem("token");
+
+            // Read token from localStorage
+            if(!token){
+                alert("Invalid Credentials")
+            }
+            
+            // Authorization headers for API request
+            function authHeaders(){
+                return {
+                    "Content-Type": "application/json",
+                    "Authorization":"Bearer " + token
+                };    
+            }
+
+            // Function to load tasks for a board
+            async function loadTasks() {
+
+                // Get board_id from URL query params
+                const params = new URLSearchParams(window.location.search);
+                const board_id = params.get("board_id");
+                
+                // If URL does not contain board_id
+                if (!board_id) {
+                    alert("Board ID missing in URL");
+                    return;
+                }
+
+                // Fetch all tasks of this board
+                const res = await fetch (`${API}/tasks/${board_id}` , {
+                    headers: authHeaders()
+                });
+
+                // If API fails, show an error
+                if(!res.ok){
+                    alert("Faied to load tasks")
+                    return
+                };
+                
+                // Convert API response to JSON
+                const tasks = await res.json();
+
+                // Access the empty div using its ID (taskList)
+                const list = document.getElementById("taskList")
+
+                // Clear any old content
+                list.innerHTML="";
+
+                // If no tasks available
+                if (tasks.length === 0) {
+                    list.innerHTML = "<p>No tasks available</p>";
+                    return;
+                }
+                
+                // Loop through all tasks
+                tasks.forEach(task => {
+                    list.innerHTML += `
+                    <div class="task-box">
+                        <h3>${task.title}</h3>
+                        <p>${task.description || "No description"}</p>
+                    </div>
+                    `;
+                });
+
+            }
+            
+            // Load tasks when page loads
+            loadTasks();
+        </script>
+    </body>
+</html>

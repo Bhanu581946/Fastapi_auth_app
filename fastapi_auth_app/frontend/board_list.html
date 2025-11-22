@@ -44,6 +44,7 @@
 
   <!-- Empty div where JavaScript will add board cards dynamically -->
   <div id="boardList"></div>
+  <!-- <p><a href="task_list.html">View Your Tasks</a></p> -->
 
   <script>
     // Backend API base URL
@@ -91,10 +92,12 @@
       boards.forEach(board => {
         list.innerHTML += `
           <div class="board-box">
+            <p><b>Board ID:</b> ${board.id}</p>
             <h3>${board.name}</h3>
             <p><b>Your Role:</b> ${board.role}</p>
             <button onclick="changeRole(${board.id})">Change Role</button>
             <button onclick ="createTask(${board.id})">Create Task</button>
+            <button onclick="viewTasks(${board.id})">View Tasks</button>
           </div>
         `;
       });
@@ -110,6 +113,10 @@
       window.location.href = `create_task.html?board_id=${board_id}`;
     }
    
+    //Navigate to view_task page with board_id
+    function viewTasks(board_id) {
+      window.location.href = `task_list.html?board_id=${board_id}`;
+    }
 
     loadBoards();
   </script>

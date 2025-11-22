@@ -67,6 +67,7 @@
 
   <p><a href="board_list.html">View Your Boards</a></p>
 
+
   <script>
     const API = "http://127.0.0.1:8000";
     const token = localStorage.getItem("token");
@@ -107,6 +108,7 @@
       } else {
         alert("Error: " + (data.detail || "Failed to create board"));
       }
+
     });
 
     // LOGOUT
