@@ -53,3 +53,15 @@ class ShowTask(BaseModel):
     status: str
     class Config:
         from_attributes = True
+
+class SubtaskCreate(BaseModel):
+    title: str
+    task_id: int
+
+class ShowSubtask(BaseModel):
+    id: int
+    task_id:int
+    title: str
+    class Config:
+        from_attributes =True
+

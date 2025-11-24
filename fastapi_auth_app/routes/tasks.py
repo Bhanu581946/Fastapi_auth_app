@@ -58,7 +58,7 @@ def delete_task(task_id:int,
                 models.BoardMember.role == "owner").first()
     )
     if not membership:
-        raise HTTPException(status_code = 400, detail = "Only owner can delete tasks")
+        raise HTTPException(status_code = 400, detail = "You are not a owner of this board")
     
     # 3. Delete task
     db.delete(task)
