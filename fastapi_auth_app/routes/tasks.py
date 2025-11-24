@@ -10,13 +10,14 @@ def create_task(task: schemas.TaskCreate,
                 db: Session = Depends(get_db), 
                 user: models.User = Depends(auth.get_current_user)):
     
-    # Check membership (user must be member of board)
+    # Check membership, Allow ONLY owners to create tasks
     membership = db.query(models.BoardMember).filter(
         models.BoardMember.board_id == task.board_id,
-        models.BoardMember.user_id == user.id
+        models.BoardMember.user_id == user.id,
+        models.BoardMember.role == "owner"
     ).first()
     if not membership:
-        raise HTTPException(status_code=403, detail="You are not a member of this board")
+        raise HTTPException(status_code=403, detail="Only Owner can create task")
 
     # new_task = models.Task(**task.dict())
     new_task = models.Task(**task.model_dump())
@@ -39,7 +40,7 @@ def get_tasks(board_id: int,
         raise HTTPException(status_code=403, detail="Access denied")
     return db.query(models.Task).filter(models.Task.board_id == board_id).all()
 
-@router.delete("{task_id}")
+@router.delete("/{task_id}")
 def delete_task(task_id:int, 
                 db:Session = Depends(get_db), 
                 user:models.User = Depends(auth.get_current_user)):
@@ -49,14 +50,15 @@ def delete_task(task_id:int,
     if not task:
         raise HTTPException(status_code = 400, detail = "task not found")
     
-    # 2. Check membership (user must be member of board)
+    # 2. Check membership, allow ONLY owners to delete tasks
     membership=(
         db.query(models.BoardMember)
         .filter(models.BoardMember.board_id == task.board_id,
-                models.BoardMember.user_id == user.id).first()
+                models.BoardMember.user_id == user.id,
+                models.BoardMember.role == "owner").first()
     )
     if not membership:
-        raise HTTPException(status_code = 400, detail = "You are not a member of this board")
+        raise HTTPException(status_code = 400, detail = "Only owner can delete tasks")
     
     # 3. Delete task
     db.delete(task)
