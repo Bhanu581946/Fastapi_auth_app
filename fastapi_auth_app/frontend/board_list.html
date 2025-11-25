@@ -97,7 +97,8 @@
             <p><b>Your Role:</b> ${board.role}</p>
             <button onclick="changeRole(${board.id})">Change Role</button>
             <button onclick ="createTask(${board.id})">Create Task</button>
-            <button onclick="viewTasks(${board.id})">View Tasks</button>
+            <button onclick="viewTasks(${board.id})">Tasks</button>
+
           </div>
         `;
       });
@@ -115,7 +116,7 @@
    
     //Navigate to view_task page with board_id
     function viewTasks(board_id) {
-      window.location.href = `task_list.html?board_id=${board_id}`;
+      window.location.href = `tasks.html?board_id=${board_id}`;
     }
 
     loadBoards();

@@ -1,0 +1,144 @@
+<html>
+
+<head>
+    <title>Subtask Create</title>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: whitesmoke;
+            text-align: center;
+            padding: 20px;
+        }
+
+        input[type="text"],
+        input[type="number"] {
+            padding: 8px;
+            width: 200px;
+            border: 1px solid lightgray;
+            border-radius: 4px;
+            margin: 15px;
+            cursor: pointer;
+        }
+
+        button {
+            width: 150px;
+            padding: 8px;
+            border: none;
+            border-radius: 4px;
+            background-color: lightblue;
+            color: white;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: darkblue;
+        }
+    </style>
+</head>
+
+<body>
+    <h2>Create Subtask</h2>
+    <p><b>Task ID:</b><span id="taskId"></span></p>
+    <p><b>Board ID:</b><span id="boardId"></span></p>
+    <!-- <label>Board ID:</label>
+    <input type="number" id="boardId" placeholder="Enter board ID"><br><br> -->
+    <label>Title:</label>
+    <input type="text" id="title" placeholder="Enter title of subtask"><br><br>
+
+    <button id="createSubtask">Create Subtask</button>
+
+    <script>
+        const API = "http://127.0.0.1:8000";
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+            alert("Invalid Credentials")
+            window.location.href = "login.html"
+        }
+
+        function authHeaders() {
+            return {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + token
+            }
+        }
+
+        // Read Task ID from URL
+        const params = new URLSearchParams(window.location.search)
+        const task_id = params.get("task_id")
+        const board_id = params.get("board_id")
+
+        if (!task_id) {
+            alert("task not found")
+            window.location.href = "create_task.html"
+        }
+
+        // Show Task ID and Board ID:
+        document.getElementById("taskId").innerHTML = task_id;
+        document.getElementById("boardId").innerHTML = board_id;
+
+        async function loadData(){
+            //  Step 1: Load Members to check permission
+            const memberRes = await fetch(`${API}/boards/members/${board_id}`, {
+                headers: authHeaders()
+            });
+
+            const members = await memberRes.json();
+
+            // Decode current user ID from JWT
+            const currentUserId = JSON.parse(atob(token.split(".")[1])).sub;
+
+            const me = members.find(m=>m.user_id==currentUserId);
+
+            if(!me){
+                alert("you are not a member of this board")
+                window.location.href = "board_list.html"
+                return;
+            }
+            
+            if(me.role.toLowerCase()=="viewer"){
+                alert("viewer can not create subtask!");
+                window.location.href = "board_list.html"
+                return;
+            }
+        }
+        loadData()
+
+        // Create Subtask
+        document.getElementById("createSubtask").addEventListener("click", async () => {
+
+            // const board_id = document.getElementById("boardId").value;
+            const title = document.getElementById("title").value;
+
+            if (!title) {
+                alert("Title required");
+                return;
+            }
+
+            // 2.Create Subtask
+            const res = await fetch(`${API}/subtasks/`, {
+                method: "POST",
+                headers: authHeaders(),
+                body: JSON.stringify({
+                    task_id: parseInt(task_id),
+                    title: title
+                })
+            });
+
+            const data = await res.json();
+          
+
+            if (res.ok) {
+                alert("Subtask created!");
+            } else {
+                alert("Error:" + data.detail);
+            }
+
+
+        });
+
+    </script>
+</body>
+
+</html>

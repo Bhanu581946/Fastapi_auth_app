@@ -43,6 +43,7 @@
     <h2>Create Task</h2>
     
     <p><b>Board ID:</b> <span id="boardId"></span></p><br>
+    <label>User ID:</label>
     <input type="number" id="userId" placeholder="Enter User ID"><br><br>
     
     <label>Title:</label> 
@@ -73,19 +74,11 @@
             window.location.href ="board_list.html"
         }
         
-        // Show board_id (IMPORTANT)
-        document.getElementById("boardId").innerHTML = board_id; 
+        // Show board_id 
+        document.getElementById("boardId").innerHTML = board_id;
+
         // OWNER CHECK
         async function loadData() {
-
-             // Load board info.
-            // const boardRes = await fetch(`${API}/boards/one/${board_id}`, {
-            //     headers: authHeaders()
-            // });
-
-            // const board = await boardRes.json();
-
-            // document.getElementById("boardId").innerHTML = board_id;
 
             //Load board members 
             const memberRes = await fetch(`${API}/boards/members/${board_id}`, {
@@ -144,7 +137,7 @@
     
         if(res.ok){
             alert("Task created Successfully");
-            window.location.href = `task_list.html?board_id=${board_id}`;
+            window.location.href = `tasks.html?board_id=${board_id}`;
         }else{
             alert("Error:" + data.detail);
         }

@@ -38,7 +38,7 @@ def create_subtask(data: schemas.SubtaskCreate,
 
     # 4. Create subtask
     # new_subtask = models.Subtask(task_id=data.task_id, title= data.title)
-    new_subtask = models.Subtask(**data.model.dump())
+    new_subtask = models.Subtask(**data.model_dump())
     db.add(new_subtask)
     db.commit()
     db.refresh(new_subtask)

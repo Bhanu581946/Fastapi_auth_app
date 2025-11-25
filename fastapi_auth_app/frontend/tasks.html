@@ -106,12 +106,21 @@
                         <p>${task.description || "No description"}</p>
 
                         <button onclick="deleteTask(${task.id})">Delete Task</button>
+                        <button onclick="createSubTask(${task.id}, ${board_id})">Create Subtask</button>
+
                     </div>
                     `;
                 });
 
             }
             
+
+            //Navigate to view_task page with task_id
+            function createSubTask(task_id, board_id) {
+                window.location.href = `create_subtask.html?task_id=${task_id}&board_id=${board_id}`;
+            }
+
+
             // Load tasks when page loads
             loadTasks();
 
