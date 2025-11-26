@@ -41,7 +41,10 @@
     <!-- Task list container -->
     <div id="taskList"></div>
 
+    <p class ="logoutbtn" id= "logoutbtn">Logout</p>
+
     <a href="board_list.html">Back to Boards</a>
+
 
 
     <script>
@@ -156,6 +159,13 @@
                 alert("Error: " + data.detail);
             }
         }
+        
+        // LOGOUT
+        document.getElementById("logoutbtn").addEventListener("click", () =>{
+            localStorage.removeItem("token");
+            alert("Logged Out!");
+            window.loaction.href="login.html";
+        })
     </script>
 </body>
 

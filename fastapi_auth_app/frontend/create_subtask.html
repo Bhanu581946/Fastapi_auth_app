@@ -49,6 +49,8 @@
 
     <button id="createSubtask">Create Subtask</button><br><br>
 
+    <p class="logoutbtn" class="logoutbtn">Logout</p>
+
    <a href="tasks.html?board_id=${board_id}">Back to Tasks</a>
 
     <script>
@@ -138,6 +140,13 @@
             }
 
 
+        });
+
+        // LOGOUT
+        document.getElementById("logoutbtn").addEventListener("click", () => {
+            localStorage.removeItem("token");
+            alert("Logged Out!");
+            window.location.href = "login.html";
         });
 
     </script>

@@ -53,6 +53,8 @@
 
     <button id="createTask">Create Task</button><br><br>
 
+    <p class="logoutbtn" id="logoutbtn">Logout</p>
+
     <a href="board_list.html">Back to Boards</a>
 
 
@@ -145,7 +147,14 @@
             alert("Error:" + data.detail);
         }
 
-    });  
+    }); 
+    
+    // LOGOUT
+    document.getElementById("logoutbtn").addEventListener("click", () =>{
+        localStorage.removeItem("token")
+        alert("Logged out!");
+        window.location.href = "login.html";
+    })
 
     </script>
 </body>

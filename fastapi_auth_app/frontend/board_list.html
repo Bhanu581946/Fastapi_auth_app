@@ -46,6 +46,8 @@
   <div id="boardList"></div>
   <!-- <p><a href="task_list.html">View Your Tasks</a></p> -->
 
+  <p class="logoutbtn" id="logoutbtn">Logout</p>
+
   <script>
     // Backend API base URL
     const API = "http://127.0.0.1:8000";
@@ -120,6 +122,13 @@
     }
 
     loadBoards();
+
+    // LOGOUT
+    document.getElementById("logoutbtn").addEventListener("click", () =>{
+      localStorage.removeItem("token");
+      alert("Logged out!");
+      window.location.href = "login.html";
+    });
   </script>
 
 </body>

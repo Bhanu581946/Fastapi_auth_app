@@ -41,8 +41,9 @@
     <!-- Subtask list container -->
     <div id="subtaskList"></div>
 
-    <a href="tasks.html?board_id=${board_id}">Back to Tasks</a>
+    <p class ="logoutbtn" id ="logoutbtn">Logout</p>
 
+    <a href="tasks.html?board_id=${board_id}">Back to Tasks</a>
 
     <script>
         const API = "http://127.0.0.1:8000";
@@ -128,6 +129,12 @@
                 alert("Error :" + data.detail);
             }
         }
+
+        document.getElementById("logoutbtn").addEventListener("click", () =>{
+            localStorage.removeItem("token");
+            alert("Logged Out!")
+            window.location.href="login.html";
+        });
     </script>
 
 </body>
