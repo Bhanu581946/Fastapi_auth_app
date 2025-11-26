@@ -1,149 +1,159 @@
 <html>
-    <head>
-        <meta charset ="UTF-8">
-        <title>List of Task</title>
-        <style>
-            body {
-                font-family: Arial, sans-serif;
-                background: whitesmoke;
-                padding: 20px;
-                text-align: center;
+
+<head>
+    <meta charset="UTF-8">
+    <title>List of Task</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: whitesmoke;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .task-box {
+            width: 300px;
+            margin: auto;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            margin-bottom: 12px;
+        }
+
+        button {
+            background: red;
+            color: white;
+            padding: 6px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+
+        }
+    </style>
+</head>
+
+<body>
+    <h2>Your Task</h2>
+
+    <p><b>Board ID:</b> <span id="boardDisplay"></span></p>
+
+    <!-- Task list container -->
+    <div id="taskList"></div>
+
+    <script>
+
+        // Backend URL
+        const API = "http://127.0.0.1:8000";
+
+        // Read token from localStorage
+        const token = localStorage.getItem("token");
+
+        // Read token from localStorage
+        if (!token) {
+            alert("Invalid Credentials")
+        }
+
+        // Authorization headers for API request
+        function authHeaders() {
+            return {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + token
+            };
+        }
+
+        // Function to load tasks for a board
+        async function loadTasks() {
+
+            // Get board_id from URL query params
+            const params = new URLSearchParams(window.location.search);
+            const board_id = params.get("board_id");
+            document.getElementById("boardDisplay").textContent = board_id;
+
+            // If URL does not contain board_id
+            if (!board_id) {
+                alert("Board ID missing in URL");
+                return;
             }
-            .task-box {
-                width: 300px;
-                margin: auto;
-                background: white;
-                padding: 15px;
-                border-radius: 8px;
-                border: 1px solid #ddd;
-                margin-bottom: 12px;
-            }
-            button{
-                background: red;
-                color: white;
-                padding: 6px;
-                border: none;
-                border-radius: 4px;
-                cursor: pointer;
 
-            }
-        </style>
-    </head>
-    <body>
-        <h2>Your Task</h2>
+            // Fetch all tasks of this board
+            const res = await fetch(`${API}/tasks/${board_id}`, {
+                headers: authHeaders()
+            });
 
-        <p><b>Board ID:</b> <span id="boardDisplay"></span></p>
+            // If API fails, show an error
+            if (!res.ok) {
+                alert("Faied to load tasks")
+                return
+            };
 
-         <!-- Task list container -->
-        <div id ="taskList"></div>
+            // Convert API response to JSON
+            const tasks = await res.json();
 
-        <script>
+            // Access the empty div using its ID (taskList)
+            const list = document.getElementById("taskList")
 
-            // Backend URL
-            const API= "http://127.0.0.1:8000";    
+            // Clear any old content
+            list.innerHTML = "";
 
-            // Read token from localStorage
-            const token= localStorage.getItem("token");
-
-            // Read token from localStorage
-            if(!token){
-                alert("Invalid Credentials")
-            }
-            
-            // Authorization headers for API request
-            function authHeaders(){
-                return {
-                    "Content-Type": "application/json",
-                    "Authorization":"Bearer " + token
-                };    
+            // If no tasks available
+            if (tasks.length === 0) {
+                list.innerHTML = "<p>No tasks available</p>";
+                return;
             }
 
-            // Function to load tasks for a board
-            async function loadTasks() {
-
-                // Get board_id from URL query params
-                const params = new URLSearchParams(window.location.search);
-                const board_id = params.get("board_id");
-                document.getElementById("boardDisplay").textContent = board_id;
-                
-                // If URL does not contain board_id
-                if (!board_id) {
-                    alert("Board ID missing in URL");
-                    return;
-                }
-
-                // Fetch all tasks of this board
-                const res = await fetch (`${API}/tasks/${board_id}` , {
-                    headers: authHeaders()
-                });
-
-                // If API fails, show an error
-                if(!res.ok){
-                    alert("Faied to load tasks")
-                    return
-                };
-                
-                // Convert API response to JSON
-                const tasks = await res.json();
-
-                // Access the empty div using its ID (taskList)
-                const list = document.getElementById("taskList")
-
-                // Clear any old content
-                list.innerHTML="";
-
-                // If no tasks available
-                if (tasks.length === 0) {
-                    list.innerHTML = "<p>No tasks available</p>";
-                    return;
-                }
-                
-                // Loop through all tasks
-                tasks.forEach(task => {
-                    list.innerHTML += `
+            // Loop through all tasks
+            tasks.forEach(task => {
+                list.innerHTML += `
                     <div class="task-box">
                         <h3>${task.title}</h3>
                         <p>${task.description || "No description"}</p>
 
                         <button onclick="deleteTask(${task.id})">Delete Task</button>
                         <button onclick="createSubTask(${task.id}, ${board_id})">Create Subtask</button>
-
+                        <button onclick="viewSubTask(${task.id}, ${board_id})">View Subtask</button>
                     </div>
                     `;
-                });
+            });
 
+        }
+
+
+        //Navigate to create_subtask page with task_id
+        function createSubTask(task_id, board_id) {
+            window.location.href = `create_subtask.html?task_id=${task_id}&board_id=${board_id}`;
+        }
+
+        //Navigate to view_subtask page with task_id
+        function viewSubTask(task_id, board_id) {
+            window.location.href = `view_subtask.html?task_id=${task_id}&board_id=${board_id}`;
+        }
+
+
+        // Load tasks when page loads
+        loadTasks();
+
+        // DELETE TASK FUNCTION
+        async function deleteTask(task_id) {
+            if (!confirm("Are you sure you want to delete this task?")) {
+                return;
             }
-            
 
-            //Navigate to view_task page with task_id
-            function createSubTask(task_id, board_id) {
-                window.location.href = `create_subtask.html?task_id=${task_id}&board_id=${board_id}`;
+            const res = await fetch(`${API}/tasks/${task_id}`, {
+                method: "DELETE",
+                headers: authHeaders()
+            });
+
+            const data = await res.json();
+
+            if (res.ok) {
+                alert("Task deleted Successfully ");
+                loadTasks();
+            } else {
+                alert("Error: " + data.detail);
             }
+        }
+    </script>
+</body>
 
-
-            // Load tasks when page loads
-            loadTasks();
-
-            // DELETE TASK FUNCTION
-            async function deleteTask(task_id){
-                if(!confirm("Are you sure you want to delete this task?")){
-                    return;
-                }
-
-                const res = await fetch (`${API}/tasks/${task_id}`, {
-                    method: "DELETE",
-                    headers: authHeaders()
-                });
-
-                const data =  await res.json();
-
-                if(res.ok){
-                    alert("Task deleted Successfully ");
-                    loadTasks();
-                } else{
-                    alert("Error: " + data.detail);
-                }
-            }
-        </script>
-    </body>
 </html>

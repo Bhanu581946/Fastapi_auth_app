@@ -48,8 +48,8 @@ def create_subtask(data: schemas.SubtaskCreate,
 # 🔹 Get all subtasks for a single task
 # ============================
 @router.get("/{task_id}", response_model=list[schemas.ShowSubtask])
-def get_subtask(board_id: int,
-                task_id:int,
+def get_subtask(task_id:int,
+                board_id: int,
                 db:Session = Depends(get_db),
                 user:models.User = Depends(auth.get_current_user)):
     

@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
 
 <head>
@@ -79,7 +80,7 @@
         document.getElementById("boardId").innerHTML = board_id;
 
         async function loadData(){
-            //  Step 1: Load Members to check permission
+            // Load Members to check permission
             const memberRes = await fetch(`${API}/boards/members/${board_id}`, {
                 headers: authHeaders()
             });
@@ -105,7 +106,6 @@
         }
         loadData()
 
-        // Create Subtask
         document.getElementById("createSubtask").addEventListener("click", async () => {
 
             // const board_id = document.getElementById("boardId").value;
@@ -116,7 +116,7 @@
                 return;
             }
 
-            // 2.Create Subtask
+            // Create Subtask
             const res = await fetch(`${API}/subtasks/`, {
                 method: "POST",
                 headers: authHeaders(),
