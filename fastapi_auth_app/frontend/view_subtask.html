@@ -40,7 +40,7 @@
 
 <body>
     <h2>Your Subtask:</h2>
-    <p><b>Task ID:</b><span id="taskDisplay"></span></p>
+    <p><b>Task ID:</b><span id="taskId"></span></p>
     <!-- <p><b>Task ID:</b><span id="boardId"></span></p> -->
 
     <!-- Subtask list container -->
@@ -80,7 +80,7 @@
                 return;
             }
 
-            document.getElementById("taskDisplay").textContent = task_id;
+            document.getElementById("taskId").textContent = task_id;
 
             // Fetch all tasks of this board
             const res = await fetch(`${API}/subtasks/${task_id}?board_id=${board_id}`, {

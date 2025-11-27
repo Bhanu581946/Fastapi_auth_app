@@ -65,3 +65,6 @@ class ShowSubtask(BaseModel):
     class Config:
         from_attributes =True
 
+class InviteRequest(BaseModel):
+    email: EmailStr
+    board_id: int
