@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Invite Member</title>
+        <meta charset="UTF-8">
+        <style>
+            body{
+                font-family: Arial, Helvetica, sans-serif;
+                background-color: lightgray;
+                padding:20px;
+                text-align: center
+            }
+            input[type="number"]{
+                padding:20px;
+                margin-top: 10px;
+                width:200px;
+                border:1px solid darkgrey;
+                border-radius:6px;
+            }
+            button{
+                width:150px;
+                padding: 10px;
+                margin-top: 10px;
+                border: 1px solid darkblue;
+                border-radius: 6px;
+                color:white;
+                cursor:pointer;
+            }
+            button:hover{
+                background: navy;
+                color: white;
+            }
+        </style>
+    </head>
+    <body>
+        <h2>Invite member</h2>
+        <p><b>Board:</b> <span id="boardDisplay">Loading--</span></p>
+
+        <label>User Email:</label>
+        <input type="email" id="email" placeholder="Enter user's email"><br><br>
+        <button id ="inviteBtn">Invite Member</button>
+
+        <script>
+            const API = "http://127.0.0.1:8000";
+
+            const token = localStorage.getItem("token");
+
+            if(!token){
+                alert("Invalid Credentials")
+            }
+
+            function authHeader(){
+                return{
+                    "Content-Type":"application/json",
+                    "Authorization":"Bearer "+ token
+                };
+            }
+            
+            // Get board_id from URL
+            const params = new URLSearchParams(window.location.search);
+            const board_id = params.get("board_id");
+            document.getElementById("boardDisplay").textContent = board_id;
+
+            if(!board_id){
+                alert("Invalid Board!");
+                window.location.href("board_list.html");
+            }
+
+            async function loadData() {
+               const memberRes = await fetch(`${API}/boards/members/${board_id}`, {
+                   headers: authHeader()
+                });
+
+                const members =await memberRes.json();
+
+                const currentUserId = JSON.parse(atob(token.split(".")[1])).sub;
+
+                const me = members.find(m=> m.user_id == currentUserId);
+
+                if(me.role.toLowerCase()!=="owner"){
+                    alert("only owner can invite member")
+                    window.location.href = "board_list.html";
+                    return;
+
+                }
+            }    
+
+            loadData();
+
+            // Invite user
+            document.getElementById("inviteBtn").addEventListener("click", async() => {
+
+                const email = document.getElementById("email").value.trim();
+
+                if (!email) return alert("Email required!");
+
+                const res =await fetch(`${API}/boards/invite-member`,{
+                    method:"POST",
+                    headers: authHeader(),
+                    body: JSON.stringify({board_id: parseInt(board_id),
+                       user_id: parseInt(user_id),
+                       email:email})
+                });
+
+            const data =await res.json();
+
+            if(res.ok){
+                alert("Invitation successful!");
+                window.loaction.href="create_board.html";
+            }else{"Error:" + data.detail};
+                
+        });
+        </script>
+    </body>
+
+
+</html>

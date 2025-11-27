@@ -105,6 +105,7 @@
             <button onclick="changeRole(${board.id})">Change Role</button>
             <button onclick ="createTask(${board.id})">Create Task</button>
             <button onclick="viewTasks(${board.id})">Tasks</button>
+            <button onclick="invite_member(${board_id})"Invite Member</button>
 
           </div>
         `;
@@ -124,6 +125,11 @@
     //Navigate to view_task page with board_id
     function viewTasks(board_id) {
       window.location.href = `tasks.html?board_id=${board_id}`;
+    }
+
+    //Navigate to invite_member page with board_id
+    function invite_member(board_id) {
+      window.location.href = `invite_member.html?board_id=${board_id}`;
     }
 
     loadBoards();

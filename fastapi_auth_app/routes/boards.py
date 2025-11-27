@@ -150,7 +150,7 @@ def invite_member(data:schemas.InviteRequest,
     #Step 3. Check duplicate Membership
     exists = db.query(models.BoardMember).filter(
         models.BoardMember.board_id == data.board_id,
-        models.BoardMember.user_id == user_to_invite.id,
+        models.BoardMember.user_id == user_to_invite.id
     ).first()
     if exists:
         raise HTTPException(status_code = 400, detail = "User already a member")
