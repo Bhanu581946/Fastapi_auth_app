@@ -94,7 +94,7 @@
 
             // If API fails, show an error
             if (!res.ok) {
-                alert("Faied to load tasks")
+                alert("Failed to load tasks")
                 return
             };
 
@@ -169,7 +169,7 @@
         document.getElementById("logoutbtn").addEventListener("click", () =>{
             localStorage.removeItem("token");
             alert("Logged Out!");
-            window.loaction.href="login.html";
+            window.location.href="login.html";
         })
     </script>
 </body>

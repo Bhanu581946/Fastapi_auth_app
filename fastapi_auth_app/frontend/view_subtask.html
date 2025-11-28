@@ -48,8 +48,9 @@
 
     <p class ="logoutbtn" id ="logoutbtn">Logout</p>
 
-    <a href="tasks.html?board_id=${board_id}">Back to Tasks</a>
-
+     <!-- <a href="tasks.html?board_id=${board_id}">Back to Tasks</a> -->
+    <a id="backLink" href="#">Back to Tasks</a>
+   
     <script>
         const API = "http://127.0.0.1:8000";
         const token = localStorage.getItem("token");
@@ -79,8 +80,14 @@
                 alert("Invalid URL!");
                 return;
             }
-
+            
+            // Show Task ID
             document.getElementById("taskId").textContent = task_id;
+
+             // Back Link Setup
+            document.getElementById("backLink").href = `tasks.html?board_id=${board_id}`;
+
+
 
             // Fetch all tasks of this board
             const res = await fetch(`${API}/subtasks/${task_id}?board_id=${board_id}`, {

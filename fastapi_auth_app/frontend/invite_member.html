@@ -10,7 +10,7 @@
                 padding:20px;
                 text-align: center
             }
-            input[type="number"]{
+            input[type="email"]{
                 padding:20px;
                 margin-top: 10px;
                 width:200px;
@@ -18,13 +18,14 @@
                 border-radius:6px;
             }
             button{
-                width:150px;
+                width:300px;
                 padding: 10px;
                 margin-top: 10px;
                 border: 1px solid darkblue;
                 border-radius: 6px;
                 color:white;
                 cursor:pointer;
+                background-color: lightblue;
             }
             button:hover{
                 background: navy;
@@ -39,6 +40,7 @@
         <label>User Email:</label>
         <input type="email" id="email" placeholder="Enter user's email"><br><br>
         <button id ="inviteBtn">Invite Member</button>
+        <p class ="logoutbtn" id ="logoutbtn"<</p>
 
         <script>
             const API = "http://127.0.0.1:8000";
@@ -63,7 +65,7 @@
 
             if(!board_id){
                 alert("Invalid Board!");
-                window.location.href("board_list.html");
+                window.location.href="board_list.html";
             }
 
             async function loadData() {
@@ -98,7 +100,6 @@
                     method:"POST",
                     headers: authHeader(),
                     body: JSON.stringify({board_id: parseInt(board_id),
-                       user_id: parseInt(user_id),
                        email:email})
                 });
 
@@ -106,10 +107,19 @@
 
             if(res.ok){
                 alert("Invitation successful!");
-                window.loaction.href="create_board.html";
-            }else{"Error:" + data.detail};
+                window.location.href="create_board.html";
+            }else{
+                alert("Error:" + data.detail)};
                 
         });
+
+        //LOGOUT
+        document.getElementById("logoutbtn").addEventListener("click", () => {
+            localStorage.removeItem("token");
+            alert("Log Out!");
+            window.location.href ="login.html";
+        })
+        
         </script>
     </body>
 

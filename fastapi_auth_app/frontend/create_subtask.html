@@ -56,7 +56,9 @@
 
     <p class="logoutbtn" id="logoutbtn">Logout</p>
 
-   <a href="tasks.html?board_id=${board_id}">Back to Tasks</a>
+   <!-- <a href="tasks.html?board_id=${board_id}">Back to Tasks</a> -->
+    <a id="backLink" href="#">Back to Tasks</a>
+
 
     <script>
         const API = "http://127.0.0.1:8000";
@@ -87,6 +89,9 @@
         // Show Task ID and Board ID:
         document.getElementById("taskId").innerHTML = task_id;
         document.getElementById("boardId").innerHTML = board_id;
+        
+        document.getElementById("backLink").href = `tasks.html?board_id=${board_id}`;
+
 
         async function loadData(){
             // Load Members to check permission
