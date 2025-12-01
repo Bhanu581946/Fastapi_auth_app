@@ -167,6 +167,42 @@ def invite_member(data:schemas.InviteRequest,
     return{"message":"Invitation Successul",
            "added_user": user_to_invite.email}
     
+
+# Remove invite member only owner
+@router.delete("/remove-member")
+def delete_invite_user(data:schemas.InviteRequest,
+                       db:Session =Depends(get_db),
+                        user:models.User =Depends(auth.get_current_user) ):
+    
+     # 1. Check if requester is the owner of board
+    membership= db.query(models.BoardMember).filter(
+        models.BoardMember.board_id==data.board_id,
+                           models.BoardMember.user_id==user.id,
+                           models.BoardMember.role=="owner").first()
+    if not membership:
+        raise HTTPException(status=400, detail="Only Owner can remove members")
+    
+    # 2. Check if user exists
+    exist= db.query(models.User).filter(models.User.email==data.email).first()
+
+    if not exist:
+        raise HTTPException(status =400, detail="User not found")
+    
+    #3. Check if user is member of this board
+    invite_member = db.query(models.BoardMember).filter(
+        models.BoardMember.board_id==data.board_id,
+        models.BoardMember.user_id==exist.id).first()
+    
+    if not invite_member:
+        raise HTTPException(status=401, detail= "User is not a member of this board")
+    db.delete(invite_member)
+    db.commit()
+
+    return({"message": "deleted invitation successfully!", "email": user.email})
+
+    
+
+    
     
 
     
