@@ -88,7 +88,6 @@
             document.getElementById("backLink").href = `tasks.html?board_id=${board_id}`;
 
 
-
             // Fetch all tasks of this board
             const res = await fetch(`${API}/subtasks/${task_id}?board_id=${board_id}`, {
                 headers: authHeaders()

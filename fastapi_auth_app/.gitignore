@@ -1,0 +1,13 @@
+# Virtual Environment
+.venv/
+venv/
+
+# Python cache files
+__pycache__/
+*.pyc
+
+# Local DB files (optional)
+*.db
+
+# Windows system files
+Thumbs.db
