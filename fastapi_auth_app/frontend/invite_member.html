@@ -18,7 +18,7 @@
                 border-radius:6px;
             }
             button{
-                width:300px;
+                width:100px;
                 padding: 10px;
                 margin-top: 10px;
                 border: 1px solid darkblue;
@@ -45,6 +45,7 @@
         <label>User Email:</label>
         <input type="email" id="email" placeholder="Enter user's email"><br><br>
         <button id ="inviteBtn">Invite Member</button>
+        <button id ="dltinviteBtn">Delete Invite Member</button>
         <p class ="logoutbtn" id ="logoutbtn">Logout</p>
 
         <script>
@@ -118,6 +119,26 @@
                 
         });
 
+
+        //Remove Invite user
+        document.getElementById("dltinviteBtn").addEventListener("click", async()=>{
+            const email = document.getElementById("email").value.trim();
+
+            if (!email) return alert("Email required!");
+            const res= await fetch(`${API}/boards/remove-member`,{
+                method: "DELETE",
+                headers: authHeader(),
+                body: JSON.stringify({board_id: parseInt(board_id),
+                    email: email})
+            });
+            const data = await res.json();
+            if(res.ok){
+                alert("successfully deletd!");
+                window.location.href="create_board.html";
+            }else{
+                alert("Error:" + data.detail)};
+        
+        });
         //LOGOUT
         document.getElementById("logoutbtn").addEventListener("click", () => {
             localStorage.removeItem("token");
